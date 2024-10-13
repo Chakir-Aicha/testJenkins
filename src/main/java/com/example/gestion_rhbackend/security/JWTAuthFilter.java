@@ -40,7 +40,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             return;
         }
         jwtToken = authHeader.substring(7);// "Bearer " c est a partir du caractere num 7
-        userEmail=jwtUtils.extractUserName(jwtToken); // recuperer le mail du user a partir du token
+        userEmail=jwtUtils.extractUsername(jwtToken); // recuperer le mail du user a partir du token
         //ici on dois verifier d abord que le user n est pas encore authentifier si oui on va l'authentifier on creant un securityContext a partir de ses informations
         //si le user est deja authentifier on laisse passer la requette
         if (userEmail!=null && SecurityContextHolder.getContext().getAuthentication() == null){

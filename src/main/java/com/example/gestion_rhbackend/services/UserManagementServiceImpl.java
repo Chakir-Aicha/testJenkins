@@ -6,6 +6,7 @@ import com.example.gestion_rhbackend.mappers.UserMapper;
 import com.example.gestion_rhbackend.repositories.UserRepository;
 import com.example.gestion_rhbackend.security.JWTUtils;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 @AllArgsConstructor
 public class UserManagementServiceImpl implements UserManagementService{
     private AuthenticationManager authenticationManager;
+    @Autowired
     private JWTUtils jwtUtils;
     private PasswordEncoder passwordEncoder;
     private UserRepository userRepository;
@@ -49,7 +51,7 @@ public class UserManagementServiceImpl implements UserManagementService{
             authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(userRequest.getEmail()
                             ,userRequest.getPassword()));
-            User user=userRepository.findUserByEmail(userRequest.getEmail());
+            User user=userRepository.findUserByEmail(userRequest.getEmail()).orElseThrow();
             String jwt=jwtUtils.generateToken(user);
             String refreshToken= jwtUtils.generateRefreshToken(new HashMap<>(), user);
             userDto.setToken(jwt);
