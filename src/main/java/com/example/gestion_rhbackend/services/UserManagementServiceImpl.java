@@ -32,7 +32,7 @@ public class UserManagementServiceImpl implements UserManagementService{
             user.setFirstName(userRequest.getFirstName());
             user.setLastName(userRequest.getLastName());
             user.setRole(userRequest.getRole().toUpperCase());
-            user.setPhoto(userRequest.getPhoto());
+            user.setPicture(userRequest.getPicture());
             user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
             userDto = userMapper.fromUserToDto(userRepository.save(user));
             if (user.getId() > 0) {

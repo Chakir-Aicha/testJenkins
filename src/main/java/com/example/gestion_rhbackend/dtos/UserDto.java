@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.Lob;
 import lombok.Data;
 
 @Data
@@ -17,7 +18,11 @@ public class UserDto {
     private String lastName;
     private String email;
     private String password;
-    private String photo;
+    private String linkedIn;
+     private String twitter;
+    @Lob // Pour indiquer que ce champ contient un grand objet binaire
+    private byte[] picture;
+
     private String role;
     private String token;
     private String refreshToken;
