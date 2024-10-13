@@ -5,6 +5,8 @@ import com.example.gestion_rhbackend.enums.RoleEnum;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Data;
 
 @Data
@@ -16,7 +18,7 @@ public class UserDto {
     private String email;
     private String password;
     private String photo;
-    private RoleEnum role;
+    private String role;
     private String token;
     private String refreshToken;
     private String expirationTime;

@@ -2,6 +2,7 @@ package com.example.gestion_rhbackend.services;
 
 import com.example.gestion_rhbackend.dtos.UserDto;
 import com.example.gestion_rhbackend.entities.User;
+import com.example.gestion_rhbackend.enums.RoleEnum;
 import com.example.gestion_rhbackend.mappers.UserMapper;
 import com.example.gestion_rhbackend.repositories.UserRepository;
 import com.example.gestion_rhbackend.security.JWTUtils;
@@ -30,7 +31,7 @@ public class UserManagementServiceImpl implements UserManagementService{
             user.setEmail(userRequest.getEmail());
             user.setFirstName(userRequest.getFirstName());
             user.setLastName(userRequest.getLastName());
-            user.setRole(userRequest.getRole());
+            user.setRole(userRequest.getRole().toUpperCase());
             user.setPhoto(userRequest.getPhoto());
             user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
             userDto = userMapper.fromUserToDto(userRepository.save(user));
@@ -58,7 +59,7 @@ public class UserManagementServiceImpl implements UserManagementService{
             userDto.setRefreshToken(refreshToken);
             userDto.setExpirationTime("24Hrs");
             userDto.setStatusCode(200);
-            userDto.setRole(user.getRole());
+            userDto.setRole(user.getRole().toUpperCase());
             userDto.setMessage("user logged in successfully");
         }catch (Exception e){
             userDto.setStatusCode(500);

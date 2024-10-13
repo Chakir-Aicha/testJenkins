@@ -25,10 +25,10 @@ public class User implements UserDetails {
     private String email;
     private String password;
     private String photo;
-    private RoleEnum role;
+    private String role;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return List.of(new SimpleGrantedAuthority(role));
     }
 
     @Override
