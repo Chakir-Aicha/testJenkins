@@ -24,7 +24,10 @@ public class User implements UserDetails {
     @Column(unique = true)
     private String email;
     private String password;
-    private String photo;
+    private  String linkedIn;
+    private String twitter;
+    @Lob // Pour indiquer que ce champ contient un grand objet binaire
+    private byte[] picture;
     private String role;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
