@@ -34,13 +34,14 @@ public class UserController {
 
     @GetMapping("/employe/{id}")
     public ResponseEntity<User> getUserInfo(@PathVariable Long id) {
-        User user = userService.getUserById(id);
-        if (user == null) {
+        try {
+            User user = userService.getUserById(id);
+            logger.info("Retrieved user: {}", user);
+            return ResponseEntity.ok(user);
+        } catch (RuntimeException e) {
             logger.warn("User not found for id: {}", id);
             return ResponseEntity.notFound().build();
         }
-        logger.info("Retrieved user: {}", user);
-        return ResponseEntity.ok(user);
     }
 
     @PutMapping("/employe/{id}/change-password")
