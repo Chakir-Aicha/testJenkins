@@ -1,6 +1,6 @@
 package com.example.gestion_rhbackend.entities;
 
-import com.example.gestion_rhbackend.enums.RoleEnum;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,6 +29,8 @@ public class User implements UserDetails {
     @Lob // Pour indiquer que ce champ contient un grand objet binaire
     private byte[] picture;
     private String role;
+    @OneToMany(mappedBy = "user")
+    private List<Conge> conges;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role));
