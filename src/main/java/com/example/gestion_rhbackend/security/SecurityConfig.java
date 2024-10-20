@@ -37,6 +37,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request->request
                         .requestMatchers("/auth/**","/public/**").permitAll()
                         .requestMatchers("/rh/**").hasAnyAuthority(RoleEnum.RH.name())
+                        .requestMatchers("/conges/**").permitAll()
                         .requestMatchers("/employe/**").hasAnyAuthority(RoleEnum.EMPLOYE.name())
                         .requestMatchers("/user/**").hasAnyAuthority(RoleEnum.RH.name(),RoleEnum.EMPLOYE.name())
                         .anyRequest().authenticated())
