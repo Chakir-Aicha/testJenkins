@@ -41,7 +41,6 @@ public class CongeController {
     @PutMapping("/update/{id}")
     public ResponseEntity<CongeDto> updateConge(@PathVariable Long id, @RequestBody CongeDto congeDTO) {
         Conge updatedConge = congeService.updateConge(id, congeDTO);
-
         CongeDto responseDTO = congeMapper.CongeToDto(updatedConge);
         return ResponseEntity.ok(responseDTO);
     }

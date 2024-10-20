@@ -23,18 +23,27 @@ public class CongeServiceImpl implements CongeService {
 
     @Override
     public Conge updateConge(Long id, CongeDto congeDTO) {
-        // Vérifier si le congé existe
         Conge existingConge = congeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Conge not found with id: " + id));
-        existingConge.setStatus(congeDTO.getStatus());
 
-        // Enregistrer les changements
+        // Modifier justeles champs qui sont présents dans le DTO
+        if (congeDTO.getStatus() != null && !congeDTO.getStatus().equals("En cours")) {
+            existingConge.setStatus(congeDTO.getStatus());
+        }
+        if (congeDTO.getDateDebut() != null) {
+            existingConge.setDateDebut(congeDTO.getDateDebut());
+        }
+        if (congeDTO.getDateFin() != null) {
+            existingConge.setDateFin(congeDTO.getDateFin());
+        }
+        if (congeDTO.getMotif() != null) {
+            existingConge.setMotif(congeDTO.getMotif());
+        }
         return congeRepository.save(existingConge);
     }
 
     @Override
     public List<Conge> getCongesByUser(Long userId) {
-
         return congeRepository.findCongesByUser_Id(userId);
     }
 }
