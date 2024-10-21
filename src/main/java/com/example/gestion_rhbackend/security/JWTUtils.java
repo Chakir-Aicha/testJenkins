@@ -16,51 +16,44 @@ import java.util.function.Function;
 
 @Component
 public class JWTUtils {
-    private SecretKey Key;
-    private static final long EXPIRATION_TIME=876000;
-    @Value("${Gestion_RH-backend.Secret}")
+    /*c est a partir d un secret o va cree un secret key qui va etre decoder on des octets et apres ces octets vont etre utiliser pour cree un key avec un algorithme asymetrique
+    Hmac ce secretKey va nous aider pour signer les tokens c est un cle privee
+   */
+    private SecretKey key;
+    private static final long EXPIRATION_TIME=86400000;
     private String secretString;
-    public JWTUtils() {
-        byte[] KeyBytes= Base64.getDecoder().decode(secretString.getBytes(StandardCharsets.UTF_8));
-        this.Key = new SecretKeySpec(KeyBytes,"HmacSHA256");
+    public JWTUtils(@Value("${Gestion_RH-backend.Secret}") String secretString){
+        this.secretString=secretString;
+        byte[] keyBytes= Base64.getDecoder().decode(secretString.getBytes(StandardCharsets.UTF_8));
+        this.key=new SecretKeySpec(keyBytes,"HmacSHA256");
     }
-    public String generateToken(UserDetails userDetails){ //userDetails cad qu'on va cree un jeton a partir du details du user
+    public String generateToken(UserDetails userDetails){
         return Jwts.builder().subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis()+EXPIRATION_TIME))
-                .signWith(Key)
+                .signWith(key)
                 .compact();
     }
-    public String generateRefreshToken(HashMap<String,Object> claims,UserDetails userDetails){
+    public String generateRefreshToken(HashMap<String,Object> claims, UserDetails userDetails){
         return Jwts.builder()
-                //claims sont des informations supplimentaire q'on veux partager concernant le user
                 .claims(claims)
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis()+EXPIRATION_TIME))
-                .signWith(Key)
+                .signWith(key)
                 .compact();
     }
-    public <T> T extractClaims(String token, Function<Claims,T> claimsTFunction){
-        /* puisque on sait pas le type qu'on veux recuperer a partir duu claims on declare la methode comme une methode generique selon le retoure et pour
-        Function<Claims,T> claimsTFunction c est une methode fonctionnelle qui prend en param claims et retourne T et pour claimsFunction c est une fonctionne de la classe claims par exemple :getSubject/getExpiration ...
-        */
-        //cela fait verifier d'abord la signature du token e apres on fait recuperation de payload
-        return claimsTFunction.apply(Jwts.parser().verifyWith(Key).build().parseSignedClaims(token).getPayload());
-    }
-    public String extractUserName(String token){
-        /*Claims::getSubject => claims est une classe de la biblio jjwt et getSubject c est une methode deja predefinie qui permet de recuperer le subject"nom du user a partir des claims
-        Claims::getSubject c est comme si on fait Function<Claims,T> getSubject{}...
-         */
+    public String extractUsername(String token){
         return extractClaims(token, Claims::getSubject);
     }
-    public boolean isTokenExpired(String token){
-        //fait un check sur la date d'expiration si elle egale la date actuelle
-        return extractClaims(token,Claims::getExpiration).before(new Date());
+    private <T> T extractClaims(String token, Function<Claims,T> claimsTFunction){
+        return claimsTFunction.apply(Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload());
     }
-    public boolean isTokenValid(String token,UserDetails userDetails){
-        //verifier l'identite du user et puis verifier si le token est expirer ou pas encore
-        final String userName=extractUserName(token);
-        return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    public boolean isTokenValid(String token, UserDetails userDetails){
+        final String username=extractUsername(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+    public boolean isTokenExpired(String token){
+        return extractClaims(token,Claims::getExpiration).before(new Date());
     }
 }

@@ -2,10 +2,12 @@ package com.example.gestion_rhbackend.services;
 
 import com.example.gestion_rhbackend.dtos.UserDto;
 import com.example.gestion_rhbackend.entities.User;
+import com.example.gestion_rhbackend.enums.RoleEnum;
 import com.example.gestion_rhbackend.mappers.UserMapper;
 import com.example.gestion_rhbackend.repositories.UserRepository;
 import com.example.gestion_rhbackend.security.JWTUtils;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,6 +18,7 @@ import java.util.HashMap;
 @AllArgsConstructor
 public class UserManagementServiceImpl implements UserManagementService{
     private AuthenticationManager authenticationManager;
+    @Autowired
     private JWTUtils jwtUtils;
     private PasswordEncoder passwordEncoder;
     private UserRepository userRepository;
@@ -28,8 +31,8 @@ public class UserManagementServiceImpl implements UserManagementService{
             user.setEmail(userRequest.getEmail());
             user.setFirstName(userRequest.getFirstName());
             user.setLastName(userRequest.getLastName());
-            user.setRole(userRequest.getRole());
-            user.setPhoto(userRequest.getPhoto());
+            user.setRole(userRequest.getRole().toUpperCase());
+            user.setPicture(userRequest.getPicture());
             user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
             userDto = userMapper.fromUserToDto(userRepository.save(user));
             if (user.getId() > 0) {
@@ -49,14 +52,14 @@ public class UserManagementServiceImpl implements UserManagementService{
             authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(userRequest.getEmail()
                             ,userRequest.getPassword()));
-            User user=userRepository.findUserByEmail(userRequest.getEmail());
+            User user=userRepository.findUserByEmail(userRequest.getEmail()).orElseThrow();
             String jwt=jwtUtils.generateToken(user);
             String refreshToken= jwtUtils.generateRefreshToken(new HashMap<>(), user);
             userDto.setToken(jwt);
             userDto.setRefreshToken(refreshToken);
             userDto.setExpirationTime("24Hrs");
             userDto.setStatusCode(200);
-            userDto.setRole(user.getRole());
+            userDto.setRole(user.getRole().toUpperCase());
             userDto.setMessage("user logged in successfully");
         }catch (Exception e){
             userDto.setStatusCode(500);
