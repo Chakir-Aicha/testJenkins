@@ -17,6 +17,8 @@ public class CongeMapper {
     public CongeDto CongeToDto(Conge conge){
         CongeDto congeDto = new CongeDto();
         BeanUtils.copyProperties(conge,congeDto);
+        congeDto.setUserFirstName(conge.getUser().getFirstName());
+        congeDto.setUserLastName(conge.getUser().getLastName());
         return congeDto;
     }
 }

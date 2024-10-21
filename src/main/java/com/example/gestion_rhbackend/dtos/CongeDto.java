@@ -11,9 +11,11 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor @AllArgsConstructor
 public class CongeDto {
+    private Long id;
     private String dateDebut;
     private String dateFin;
     private String motif;
     private String status="En cours";
-    private Long id_user;
+    private String userFirstName;
+    private String userLastName;
 }

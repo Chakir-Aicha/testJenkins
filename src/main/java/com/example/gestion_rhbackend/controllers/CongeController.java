@@ -7,44 +7,77 @@ import com.example.gestion_rhbackend.mappers.CongeMapper;
 import com.example.gestion_rhbackend.repositories.CongeRepository;
 import com.example.gestion_rhbackend.repositories.UserRepository;
 import com.example.gestion_rhbackend.services.CongeService;
+import jakarta.security.auth.message.config.AuthConfig;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/conges")
+@AllArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class CongeController {
-    @Autowired
     private CongeService congeService;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private CongeRepository congeRepository;
-    @Autowired
     private CongeMapper congeMapper;
-    @PostMapping("/create")
-    public ResponseEntity<CongeDto> createConge(@RequestBody CongeDto congeDTO) {
-        if (congeDTO.getId_user() == null) {
-            return ResponseEntity.badRequest().body(null);
-        }
-        User user = userRepository.findById(congeDTO.getId_user())
-                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Conge conge = congeMapper.DtotoConge(congeDTO, user);
-        Conge createdConge = congeService.createConge(conge);
-        CongeDto responseDTO = congeMapper.CongeToDto(createdConge);
-        return ResponseEntity.ok(responseDTO);
+    @PostMapping("/employe/create_conge")
+    public ResponseEntity<CongeDto> createConge(@RequestBody CongeDto congeDTO) {
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        String email=authentication.getName();
+        return ResponseEntity.ok(congeMapper.CongeToDto(congeService.createConge(congeDTO,email)));
     }
-    @PutMapping("/update/{id}")
+
+    @GetMapping("/rh/getNonValidatedConges")
+    public ResponseEntity<List<CongeDto>> getCongesNonValides(){
+        List<Conge> conges=congeService.getCongesByStatus("EN_COURS");
+        List<CongeDto> congeDTOList = new ArrayList<>();
+        for (Conge c:conges) {
+            congeDTOList.add(congeMapper.CongeToDto(c));
+        }
+        return ResponseEntity.ok(congeDTOList);
+    }
+
+    @PutMapping("/employe/updateConge/{id}")
     public ResponseEntity<CongeDto> updateConge(@PathVariable Long id, @RequestBody CongeDto congeDTO) {
-        Conge updatedConge = congeService.updateConge(id, congeDTO);
-        CongeDto responseDTO = congeMapper.CongeToDto(updatedConge);
-        return ResponseEntity.ok(responseDTO);
+        Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
+        String email=authentication.getName();
+        return ResponseEntity.ok(congeMapper.CongeToDto(congeService.updateConge(id,congeDTO,email)));
     }
-    @GetMapping
+
+    @PutMapping("/rh/acceptConge/{id}")
+    public ResponseEntity<CongeDto> acceptConge(@PathVariable Long id){
+       return ResponseEntity.ok(congeService.acceptConge(id));
+    }
+
+    @PutMapping("/rh/rejectConge/{id}")
+    public ResponseEntity<CongeDto> rejectConge(@PathVariable Long id){
+        return ResponseEntity.ok(congeService.rejectConge(id));
+    }
+
+    @GetMapping("/employe/getConge/{userId}")
+    public ResponseEntity<List<CongeDto>> getCongesByUser(@PathVariable Long userId) {
+        Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
+        String email=authentication.getName();
+        List<Conge> conges = congeService.getCongesByUser(userId,email);
+        List<CongeDto> congeDTOList = conges.stream()
+                .map(congeMapper::CongeToDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(congeDTOList);
+    }
+
+    @DeleteMapping("/employe/deleteConge/{id}")
+    public void deleteConge(@PathVariable Long id) {
+        Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
+        String email=authentication.getName();
+        congeService.deleteConge(id,email);
+    }
+   /* @GetMapping
     public ResponseEntity<List<CongeDto>> getAllConges() {
         List<Conge> conges = congeService.getAllConges();
         List<CongeDto> congeDTOList = conges.stream()
@@ -57,18 +90,5 @@ public class CongeController {
                 })
                 .collect(Collectors.toList());
         return ResponseEntity.ok(congeDTOList);
-    }
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<CongeDto>> getCongesByUser(@PathVariable Long userId) {
-        List<Conge> conges = congeService.getCongesByUser(userId);
-        List<CongeDto> congeDTOList = conges.stream()
-                .map(congeMapper::CongeToDto)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(congeDTOList);
-    }
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteConge(@PathVariable Long id) {
-        congeRepository.deleteById(id);
-        return ResponseEntity.ok("Conge with ID " + id + " has been deleted successfully.");
-    }
+    }*/
 }

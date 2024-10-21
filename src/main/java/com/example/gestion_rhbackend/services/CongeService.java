@@ -6,10 +6,20 @@ import com.example.gestion_rhbackend.entities.Conge;
 import java.util.List;
 
 public interface CongeService {
-    Conge createConge(Conge c);
+
+    Conge createConge(CongeDto congeDto, String email);
+
     List<Conge> getAllConges();
 
-    Conge updateConge(Long id, CongeDto congeDTO);
+    Conge updateConge(Long id, CongeDto congeDTO, String email);
 
-    List<Conge> getCongesByUser(Long userId);
+    CongeDto acceptConge(Long id);
+
+    CongeDto rejectConge(Long id);
+
+    List<Conge> getCongesByUser(Long userId, String email);
+
+    List<Conge> getCongesByStatus(String status);
+
+    void deleteConge(Long id, String email);
 }

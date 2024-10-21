@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface CongeRepository extends JpaRepository<Conge, Long>  {
     List<Conge> findCongesByUser_Id(Long idUser);
+    List<Conge> findCongesByStatus(String status);
 }
