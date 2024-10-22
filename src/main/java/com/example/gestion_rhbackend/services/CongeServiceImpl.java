@@ -22,6 +22,7 @@ public class CongeServiceImpl implements CongeService {
     public Conge createConge(CongeDto congeDto, String email) {
         User user=userRepository.findUserByEmail(email).orElseThrow();
         Conge conge=congeMapper.DtotoConge(congeDto,user);
+        conge.setStatus("EN_COURS");
         return congeRepository.save(conge);
     }
 
@@ -66,12 +67,9 @@ public class CongeServiceImpl implements CongeService {
         return congeMapper.CongeToDto(congeRepository.save(conge));
     }
     @Override
-    public List<Conge> getCongesByUser(Long userId, String email) {
+    public List<Conge> getCongesByUser(String email) {
         User user=userRepository.findUserByEmail(email).orElseThrow();
-        List<Conge> conges=congeRepository.findCongesByUser_Id(userId);
-        if (userId==user.getId()) return congeRepository.findCongesByUser_Id(userId);
-        else
-            return null;
+        return congeRepository.findCongesByUser(user);
     }
     @Override
     public List<Conge> getCongesByStatus(String status){
@@ -82,6 +80,6 @@ public class CongeServiceImpl implements CongeService {
     public void deleteConge(Long id, String email) {
         User user=userRepository.findUserByEmail(email).orElseThrow();
         Conge conge=congeRepository.findById(id).orElseThrow();
-        if (conge.getUser().getId() != user.getId()) congeRepository.deleteById(id);
+        if (conge.getUser().getId() == user.getId()) congeRepository.deleteById(id);
     }
 }

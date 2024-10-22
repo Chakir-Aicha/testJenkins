@@ -17,7 +17,8 @@ public interface CongeService {
 
     CongeDto rejectConge(Long id);
 
-    List<Conge> getCongesByUser(Long userId, String email);
+
+    List<Conge> getCongesByUser(String email);
 
     List<Conge> getCongesByStatus(String status);
 

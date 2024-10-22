@@ -60,11 +60,11 @@ public class CongeController {
         return ResponseEntity.ok(congeService.rejectConge(id));
     }
 
-    @GetMapping("/employe/getConge/{userId}")
-    public ResponseEntity<List<CongeDto>> getCongesByUser(@PathVariable Long userId) {
+    @GetMapping("/employe/getConges")
+    public ResponseEntity<List<CongeDto>> getCongesByUser() {
         Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
         String email=authentication.getName();
-        List<Conge> conges = congeService.getCongesByUser(userId,email);
+        List<Conge> conges = congeService.getCongesByUser(email);
         List<CongeDto> congeDTOList = conges.stream()
                 .map(congeMapper::CongeToDto)
                 .collect(Collectors.toList());
