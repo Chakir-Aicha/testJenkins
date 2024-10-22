@@ -55,6 +55,7 @@ public class UserManagementServiceImpl implements UserManagementService{
             User user=userRepository.findUserByEmail(userRequest.getEmail()).orElseThrow();
             String jwt=jwtUtils.generateToken(user);
             String refreshToken= jwtUtils.generateRefreshToken(new HashMap<>(), user);
+           userDto.setId(user.getId());
             userDto.setToken(jwt);
             userDto.setRefreshToken(refreshToken);
             userDto.setExpirationTime("24Hrs");

@@ -14,6 +14,7 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDto {
+    private Long id;
     private String firstName;
     private String lastName;
     private String email;
