@@ -5,7 +5,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Récupérer le code source de la branche main
-                git branch: 'main', url: 'https://github.com/votre-repo'
+                git branch: 'main', url: 'https://github.com/Chakir-Aicha/testJenkins.git'
             }
         }
         
