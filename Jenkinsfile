@@ -1,36 +1,23 @@
 pipeline {
     agent any
-
     stages {
-        stage('Checkout') {
-            steps {
-                // Récupérer le code source de la branche main
-                git branch: 'main', url: 'https://github.com/Chakir-Aicha/testJenkins.git'
-            }
-        }
-        
         stage('Build') {
             steps {
-                // Construire l'application Spring Boot (par exemple, avec Maven)
-                bat './mvnw clean install -DskipTests=true'
+                // Utiliser Maven pour construire l'application
+                bat 'mvn clean install'
             }
         }
-
-        stage('Run Tests') {
+        stage('Test') {
             steps {
-                // Exécuter les tests unitaires avec Maven
-                bat './mvnw test'
+                // Exécuter les tests unitaires
+                bat 'mvn test'
             }
         }
-    }
-    
-    post {
-        success {
-            echo 'Tests passed. The build was successful!'
-        }
-
-        failure {
-            echo 'Tests failed. The build failed!'
+        stage('Deploy') {
+            steps {
+                // Par exemple, pour déployer l'application
+                bat 'mvn spring-boot:run'
+            }
         }
     }
 }
