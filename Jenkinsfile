@@ -4,14 +4,14 @@ pipeline {
         stage('Build') {
             steps {
                 // Construire l'application Spring Boot (par exemple, avec Maven)
-                bat './mvnw clean install -DskipTests'
+                sh './mvnw clean install -DskipTests'
             }
         }
 
         stage('Run Tests') {
             steps {
                 // ExÃ©cuter les tests unitaires avec Maven
-                bat './mvnw test -Punit'
+                sh './mvnw test -Punit'
             }
         }
     }
